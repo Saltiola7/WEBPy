@@ -37,27 +37,36 @@ def convert_mkv_to_webm(mkv_file_path, webm_file_path):
                 }
             }
         })
+        
+        logging.info("Job created with ID: %s", job['id'])
 
         logging.info("Waiting for upload task...")
         upload_task = cloudconvert.Task.wait(id=job['tasks'][0]['id'])
 
-        logging.info("Starting file upload...")
-        upload_response = cloudconvert.Task.upload(file=mkv_file_path, task=upload_task)
-        logging.info(f"File upload completed. Response: {upload_response}")
+        logging.info("Upload task ready with ID: %s", upload_task['id'])
 
-        logging.info("Waiting for job...")
+        logging.info("Starting file upload...")
+        try:
+            upload_response = cloudconvert.Task.upload(file=mkv_file_path, task=upload_task)
+            logging.info(f"File upload completed. Response: {upload_response}")
+        except Exception as e:
+            logging.error(f"Error during file upload: {e}")
+            raise
+        
+
+        #logging.info("Waiting for job...")
         cloudconvert.Job.wait(id=job['id'])
 
-        logging.info("Getting export task...")
+        #logging.info("Getting export task...")
         export_task = [t for t in job['tasks'] if t['name'] == 'export-my-file'][0]
 
-        logging.info("Downloading converted files...")
+        #logging.info("Downloading converted files...")
         converted_files = cloudconvert.Task.download_urls(id=export_task['id'])
 
-        logging.info("Downloading first file...")
+        #logging.info("Downloading first file...")
         cloudconvert.download.download_file(converted_files[0]['url'], webm_file_path)
 
-        logging.info(f"Conversion successful: '{mkv_file_path}' to '{webm_file_path}'")
+        #logging.info(f"Conversion successful: '{mkv_file_path}' to '{webm_file_path}'")
         upload_to_ftp(webm_file_path)
     except Exception as e:
         logging.error(f"Error during conversion: {e}")
