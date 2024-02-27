@@ -1,3 +1,7 @@
+
+python -m pip install cloudconvert
+
+
 ```
 # WebP Image Converter for Mac
 
