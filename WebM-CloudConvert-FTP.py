@@ -42,7 +42,7 @@ def convert_mkv_to_webm(mkv_file_path, webm_file_path):
         upload_task = cloudconvert.Task.wait(id=job['tasks'][0]['id'])
 
         logging.info("Starting file upload...")
-        upload_response = cloudconvert.Task.upload(file=mkv_file_path, task=upload_task)
+        upload_response = cloudconvert.Task.upload(file_path=mkv_file_path, task=upload_task)
         logging.info(f"File upload completed. Response: {upload_response}")
         
 
