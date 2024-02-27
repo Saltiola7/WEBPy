@@ -37,21 +37,13 @@ def convert_mkv_to_webm(mkv_file_path, webm_file_path):
                 }
             }
         })
-        
-        logging.info("Job created with ID: %s", job['id'])
 
         logging.info("Waiting for upload task...")
         upload_task = cloudconvert.Task.wait(id=job['tasks'][0]['id'])
 
-        logging.info("Upload task ready with ID: %s", upload_task['id'])
-
         logging.info("Starting file upload...")
-        try:
-            upload_response = cloudconvert.Task.upload(file=mkv_file_path, task=upload_task)
-            logging.info(f"File upload completed. Response: {upload_response}")
-        except Exception as e:
-            logging.error(f"Error during file upload: {e}")
-            raise
+        upload_response = cloudconvert.Task.upload(file=mkv_file_path, task=upload_task)
+        logging.info(f"File upload completed. Response: {upload_response}")
         
 
         #logging.info("Waiting for job...")
