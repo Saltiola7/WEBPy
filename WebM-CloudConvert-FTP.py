@@ -4,11 +4,11 @@ import cloudconvert
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.info)
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.info)
 
 def convert_mkv_to_webm(mkv_file_path, webm_file_path):
     """
@@ -45,9 +45,9 @@ def convert_mkv_to_webm(mkv_file_path, webm_file_path):
         logging.info("Waiting for upload task...")
         upload_task = cloudconvert.Task.wait(id=job['tasks'][0]['id'])
 
-        logging.debug("Starting file upload...")
+        logging.info("Starting file upload...")
         upload_response = cloudconvert.Task.upload(file=mkv_file_path, task=upload_task)
-        logging.debug(f"File upload completed. Response: {upload_response}")
+        logging.info(f"File upload completed. Response: {upload_response}")
 
         logging.info("Waiting for job...")
         cloudconvert.Job.wait(id=job['id'])
