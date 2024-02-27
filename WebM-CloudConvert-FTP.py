@@ -1,34 +1,50 @@
-import subprocess
 import ftplib
 import os
+import cloudconvert
 
 def convert_m4v_to_webm(m4v_file_path, webm_file_path):
     """
-    Converts a .m4v file to .webm using ffmpeg with VP8/Opus codecs.
+    Converts a .m4v file to .webm using CloudConvert.
 
     Args:
         m4v_file_path (str): The file path of the source .m4v file.
         webm_file_path (str): The desired file path for the output .webm file.
     """
     try:
-        command = [
-            'ffmpeg',
-            '-i', m4v_file_path,  # Input file
-            '-c:v', 'libvpx-vp9',  # VP8 video codec (software-encoded)
-            '-crf', '18',  # Constant Rate Factor (quality level, adjust as needed)
-            '-b:v', '0',  # 0 for CRF-controlled bitrate 7000K OBS
-            '-preset', 'faster',  # Use a faster preset
-            '-b:a', '128k',
-            '-c:a', 'libopus',  # Opus audio codec
-#            '-threads', '8',  # Utilize up to 8 threads for multithreading
-            '-threads', '0',  # Utilize up to 8 threads for multithreading
-            '-f', 'webm',  # Explicitly specify WebM output format
-            webm_file_path  # Output file
-        ]
-        subprocess.run(command, check=True)
+        cloudconvert.configure(api_key='eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMTQyZjFhMDVjNjM5ZGJiZjdiMDJkODdiZWE2ZDA4NWIwZGZmZmY0ZTg4NWI1OWIyYTE1ZTE5Y2JkZjZmZTMzMmM5YTk3NjUxY2JmMzdmYTAiLCJpYXQiOjE3MDkwMDI2OTguMDA4NDI0LCJuYmYiOjE3MDkwMDI2OTguMDA4NDI2LCJleHAiOjQ4NjQ2NzYyOTguMDAxMDU1LCJzdWIiOiI2NzM2MzQxMSIsInNjb3BlcyI6WyJ1c2VyLnJlYWQiLCJ1c2VyLndyaXRlIiwidGFzay5yZWFkIiwidGFzay53cml0ZSIsIndlYmhvb2sucmVhZCIsIndlYmhvb2sud3JpdGUiLCJwcmVzZXQucmVhZCIsInByZXNldC53cml0ZSJdfQ.FvwcJ93QMvW8mG_oTCuf7-JKhvhpWNl0djw3iUr8Hiy9hniX_FXxof4M13VWVnfXpepgMFYo0BP8KO_X9wZIY_dtnSA8oRpia9FVYsk_SwW6tY8tpReQwYCLkF-n_aGJPkuhRIP3CQ7avNEhIwUGVBG90u6PrnB9D1k-khIbp_fu60CSH0-SwHy2-LoYIc9hhM5Z69ZblmVxi4tlkbgw5WRveL5dSCVRcEEOfBxxVxVn5rX2E9JnWefOVxJO5LnkMA9k-fn80Ltv1it_MJWQ-tS6qrFsRWJH0bzkZi-U1kOqS5CDJ4jqDAK_MnsVDPejTjxy3cp5hwFkjZkRtKBm2OhLXckOKvJ865VG-xmSrlK7KYP3VNHwDz4x_nDMpHR-iUN3cwByWTdHtzMr3cQct6HjAbzRQ650t60M1L4lseet89XWpWRbmT4ZyVS91gNcBdlEchbqKbESpJEp6bJP06tjPwFZZzSmvXRuWzQknuudEvSIOuS1tA1Zk3mUsoxrQM8SJuwOVSyDbGzjtddv4LRXnxuYwk0ntfAvnleWs2Qylq1yKL4y4bBccONe5DVRRWMH-lEnbqxWD43rIoSs2nes1OWCQnUNRKoSrFkVBzO6DbSNStolwEwBbMeVlP2z8gvonKd9VM2E5r3Q3Np43x26jYW7zfAZqK9vOLkiNXU', sandbox=True)
+
+        job = cloudconvert.Job.create(payload={
+            "tasks": {
+                "import-my-file": {
+                    "operation": "import/upload"
+                },
+                "convert-my-file": {
+                    "operation": "convert",
+                    "input": "import-my-file",
+                    "output_format": "webm",
+                    "engine": "ffmpeg"
+                },
+                "export-my-file": {
+                    "operation": "export/url",
+                    "input": "convert-my-file"
+                }
+            }
+        })
+
+        upload_task = cloudconvert.Task.wait(id=job['tasks'][0]['id'])
+        cloudconvert.Task.upload(file=m4v_file_path, task=upload_task)
+
+        cloudconvert.Job.wait(id=job['id'])
+
+        export_task = [t for t in job['tasks'] if t['name'] == 'export-my-file'][0]
+        converted_files = cloudconvert.Task.download_urls(id=export_task['id'])
+
+        # Assuming you want to download the first file
+        cloudconvert.download.download_file(converted_files[0]['url'], webm_file_path)
+
         print(f"Conversion successful: '{m4v_file_path}' to '{webm_file_path}'")
         upload_to_ftp(webm_file_path)
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f"Error during conversion: {e}")
 
 def upload_to_ftp(file_path):
@@ -53,7 +69,7 @@ def upload_to_ftp(file_path):
 # Specify your .m4v file path here
 m4v_file = '/Users/tis/Movies/test.mkv'
 # Specify your desired output .webm file path here
-webm_file = '/Users/tis/Movies/webm/test.webm'
+webm_file = '/Users/tis/Movies/webm/test2.webm'
 
 # Convert the file
 convert_m4v_to_webm(m4v_file, webm_file)
