@@ -4,7 +4,7 @@ import cloudconvert
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 def convert_m4v_to_webm(m4v_file_path, webm_file_path):
     """
