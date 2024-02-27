@@ -4,11 +4,7 @@ import cloudconvert
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.info)
-
-import logging
-
-logging.basicConfig(level=logging.info)
+logging.basicConfig(level=logging.INFO)
 
 def convert_mkv_to_webm(mkv_file_path, webm_file_path):
     """
