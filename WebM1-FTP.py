@@ -15,7 +15,7 @@ def convert_m4v_to_webm(m4v_file_path, webm_file_path):
             'ffmpeg',
             '-i', m4v_file_path,  # Input file
             '-c:v', 'libvpx-vp9',  # VP8 video codec (software-encoded)
-            '-crf', '18',  # Constant Rate Factor (quality level, adjust as needed)
+            '-crf', '2',  # Constant Rate Factor (quality level, adjust as needed)
             '-b:v', '0',  # 0 for CRF-controlled bitrate 7000K OBS
             '-preset', 'faster',  # Use a faster preset
             '-b:a', '128k',
