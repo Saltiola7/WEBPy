@@ -84,9 +84,10 @@ def upload_to_ftp(file_path):
         print(f"Error during upload: {e}")
 
 # Specify your .mkv file path here
-mkv_file = '/Users/tis/Movies/test.mkv'
+# Specify your .m4v file path here
+m4v_file = '/Users/tis/Movies/vsl.mov'
 # Specify your desired output .webm file path here
-webm_file = '/Users/tis/Movies/webm/test2.webm'
+webm_file = '/Users/tis/Movies/vsl.webm'
 
 # Convert the file
 convert_mkv_to_webm(mkv_file, webm_file)
