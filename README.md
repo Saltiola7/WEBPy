@@ -1,8 +1,3 @@
-
-python -m pip install cloudconvert
-
-
-```
 # WebP Image Converter for Mac
 
 This Python application monitors a specified directory for new image files (JPG, JPEG, PNG) and automatically converts them to the WebP format. It's optimized for 16" Retina displays, ensuring high-quality images with reduced file sizes for web use. The application uses the Watchdog library to watch for new files and ImageMagick for the conversion process.
