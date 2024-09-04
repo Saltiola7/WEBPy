@@ -51,9 +51,9 @@ def upload_to_ftp(file_path):
         print(f"Error during upload: {e}")
 
 # Specify your .m4v file path here
-m4v_file = '/Users/tis/Movies/test.mkv'
+m4v_file = '/Users/tis/Movies/vsl.mov'
 # Specify your desired output .webm file path here
-webm_file = '/Users/tis/Movies/webm/test.webm'
+webm_file = '/Users/tis/Movies/vsl.webm'
 
 # Convert the file
 convert_m4v_to_webm(m4v_file, webm_file)
